@@ -233,10 +233,8 @@ public abstract class ClassLoader {
         }
     }
 
-    // Maps class name to the corresponding lock object when the current
-    // class loader is parallel capable.
-    // Note: VM also uses this field to decide if the current class loader
-    // is parallel capable and the appropriate lock object for class loading.
+    // 当当前类加载器具备并行功能时，将类名映射到对应的锁对象。
+    // Note: VM还利用该字段来判断当前类加载器是否具备并行能力，以及用于类加载的合适锁对象。
     private final ConcurrentHashMap<String, Object> parallelLockMap;
 
     // Hashtable that maps packages to certs
@@ -245,12 +243,10 @@ public abstract class ClassLoader {
     // Shared among all packages with unsigned classes
     private static final Certificate[] nocerts = new Certificate[0];
 
-    // The classes loaded by this class loader. The only purpose of this table
-    // is to keep the classes from being GC'ed until the loader is GC'ed.
+    // 这些类由该类加载器加载。这个表的唯一目的是防止这些类在加载器被GC之前被GC化。
     private final Vector<Class<?>> classes = new Vector<>();
 
-    // The "default" domain. Set as the default ProtectionDomain on newly
-    // created classes.
+    // The "default" domain. 在新创建的类中，将保护域设置为默认的保护域。
     private final ProtectionDomain defaultDomain =
         new ProtectionDomain(new CodeSource(null, (Certificate[]) null),
                              null, this, null);
@@ -395,29 +391,34 @@ public abstract class ClassLoader {
     protected Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException
     {
+        /*
+            双亲委派模型
+                向上查找：逐层询问是否已经加载（查找缓存）
+                向下加载：逐层询问是否可以加载
+         */
         synchronized (getClassLoadingLock(name)) {
-            // First, check if the class has already been loaded
+            // 首先，检查该类是否已经加载
             Class<?> c = findLoadedClass(name);
             if (c == null) {
                 long t0 = System.nanoTime();
                 try {
                     if (parent != null) {
+                        // 调用父类加载器的loadClass方法加载类（向上查找）
                         c = parent.loadClass(name, false);
                     } else {
+                        // 没有父类加载器的情况下调用 Bootstrap加载器（根加载器，即虚拟机内置的加载器）
                         c = findBootstrapClassOrNull(name);
                     }
                 } catch (ClassNotFoundException e) {
-                    // ClassNotFoundException thrown if class not found
-                    // from the non-null parent class loader
+                    // 如果非空父类加载器找不到类，则抛出ClassNotFoundException
                 }
 
                 if (c == null) {
-                    // If still not found, then invoke findClass in order
-                    // to find the class.
+                    // 如果仍然找不到，则调用findClass来查找该类。
                     long t1 = System.nanoTime();
                     c = findClass(name);
 
-                    // this is the defining class loader; record the stats
+                    // 这是定义类加载器;记录统计数据
                     sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
                     sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
                     sun.misc.PerfCounter.getFindClasses().increment();

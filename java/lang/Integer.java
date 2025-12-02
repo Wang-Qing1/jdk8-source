@@ -783,18 +783,19 @@ public final class Integer extends Number implements Comparable<Integer> {
         static final Integer cache[];
 
         static {
-            // high value may be configured by property
+            // 高值可以由属性来配置 具体的范围[-128, high] 默认为[-128,127]
             int h = 127;
             String integerCacheHighPropValue =
                 sun.misc.VM.getSavedProperty("java.lang.Integer.IntegerCache.high");
             if (integerCacheHighPropValue != null) {
                 try {
                     int i = parseInt(integerCacheHighPropValue);
+                    // 高值配置为小于127时，取127. 即 高值必须大于等于127
                     i = Math.max(i, 127);
-                    // Maximum array size is Integer.MAX_VALUE
+                    // 最大数组大小为 Integer.MAX_VALUE
                     h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
                 } catch( NumberFormatException nfe) {
-                    // If the property cannot be parsed into an int, ignore it.
+                    // 如果该属性无法解析为整数，则忽略它。
                 }
             }
             high = h;
@@ -804,7 +805,7 @@ public final class Integer extends Number implements Comparable<Integer> {
             for(int k = 0; k < cache.length; k++)
                 cache[k] = new Integer(j++);
 
-            // range [-128, 127] must be interned (JLS7 5.1.7)
+            // 范围 [-128， 127] 必须被抑制（JLS7 5.1.7）
             assert IntegerCache.high >= 127;
         }
 

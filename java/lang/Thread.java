@@ -152,19 +152,19 @@ class Thread implements Runnable {
     private Thread         threadQ;
     private long           eetop;
 
-    /* Whether or not to single_step this thread. */
+    /* 是否为单步（single_step）线程 */
     private boolean     single_step;
 
-    /* Whether or not the thread is a daemon thread. */
+    /* 是否为守护线程 */
     private boolean     daemon = false;
 
-    /* JVM state */
+    /* JVM 状态 */
     private boolean     stillborn = false;
 
-    /* What will be run. */
+    /* 将要运行什么。 */
     private Runnable target;
 
-    /* The group of this thread */
+    /* 当前线程组 */
     private ThreadGroup group;
 
     /* The context ClassLoader for this thread */
@@ -209,9 +209,7 @@ class Thread implements Runnable {
     /* For generating thread ID */
     private static long threadSeqNumber;
 
-    /* Java thread status for tools,
-     * initialized to indicate thread 'not yet started'
-     */
+    /* 线程状态，初始化为表示线程“尚未启动” */
 
     private volatile int threadStatus = 0;
 
@@ -228,15 +226,13 @@ class Thread implements Runnable {
      */
     volatile Object parkBlocker;
 
-    /* The object in which this thread is blocked in an interruptible I/O
-     * operation, if any.  The blocker's interrupt method should be invoked
-     * after setting this thread's interrupt status.
+    /* The object in which this thread is blocked in an interruptible I/O operation, if any.
+     * The blocker's interrupt method should be invoked after setting this thread's interrupt status.
      */
     private volatile Interruptible blocker;
     private final Object blockerLock = new Object();
 
-    /* Set the blocker field; invoked via sun.misc.SharedSecrets from java.nio code
-     */
+    /* 设置blocker field;通过 java.nio 代码中的 sun.misc.SharedSecrets 调用 */
     void blockedOn(Interruptible b) {
         synchronized (blockerLock) {
             blocker = b;

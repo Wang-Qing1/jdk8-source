@@ -1405,7 +1405,7 @@ public final class String
         char pa[] = prefix.value;
         int po = 0;
         int pc = prefix.value.length;
-        // Note: toffset might be near -1>>>1.
+        // Note: toffset 可能接近 -1>>>1.
         if ((toffset < 0) || (toffset > value.length - pc)) {
             return false;
         }

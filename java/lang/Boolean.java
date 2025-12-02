@@ -40,9 +40,7 @@ package java.lang;
  * @author  Arthur van Hoff
  * @since   JDK1.0
  */
-public final class Boolean implements java.io.Serializable,
-                                      Comparable<Boolean>
-{
+public final class Boolean implements java.io.Serializable, Comparable<Boolean> {
     /**
      * The {@code Boolean} object corresponding to the primitive
      * value {@code true}.
@@ -57,7 +55,9 @@ public final class Boolean implements java.io.Serializable,
 
     /**
      * The Class object representing the primitive type boolean.
-     *
+     *      Class.getPrimitiveClass(String) native方法
+     *          用于根据基本类型名称，获取对应的原始类型Class对象。
+     *          返回JVM内部维护的基本类型Class对象。
      * @since   JDK1.1
      */
     @SuppressWarnings("unchecked")

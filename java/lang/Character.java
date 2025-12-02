@@ -662,6 +662,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * used for a specific script or purpose. A character is contained by
      * at most one Unicode block.
      *
+     * 半角和全角模式
      * @since 1.2
      */
     public static final class UnicodeBlock extends Subset {
