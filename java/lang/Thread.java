@@ -372,27 +372,24 @@ class Thread implements Runnable {
         Thread parent = currentThread();
         SecurityManager security = System.getSecurityManager();
         if (g == null) {
-            /* Determine if it's an applet or not */
+            /* 确认它是不是程序 */
 
-            /* If there is a security manager, ask the security manager
-               what to do. */
+            /* 如果有security manager，问问security manager该怎么做。 */
             if (security != null) {
                 g = security.getThreadGroup();
             }
 
-            /* If the security doesn't have a strong opinion of the matter
-               use the parent thread group. */
+            /* 如果security对此事没有强烈意见，可以使用父线程组（parent thread group）。 */
             if (g == null) {
                 g = parent.getThreadGroup();
             }
         }
 
-        /* checkAccess regardless of whether or not threadgroup is
-           explicitly passed in. */
+        /* 无论 线程组（threadgroup） 是否被显式传递，都必须检查访问。 */
         g.checkAccess();
 
         /*
-         * Do we have the required permissions?
+         * 我们有所需的权限吗？
          */
         if (security != null) {
             if (isCCLOverridden(getClass())) {
@@ -416,10 +413,10 @@ class Thread implements Runnable {
         if (inheritThreadLocals && parent.inheritableThreadLocals != null)
             this.inheritableThreadLocals =
                 ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);
-        /* Stash the specified stack size in case the VM cares */
+        /* 把指定的栈大小存起来，以防虚拟机在意 */
         this.stackSize = stackSize;
 
-        /* Set thread ID */
+        /* 设置线程ID */
         tid = nextThreadID();
     }
 
@@ -696,18 +693,14 @@ class Thread implements Runnable {
      */
     public synchronized void start() {
         /**
-         * This method is not invoked for the main method thread or "system"
-         * group threads created/set up by the VM. Any new functionality added
-         * to this method in the future may have to also be added to the VM.
-         *
-         * A zero status value corresponds to state "NEW".
+         * 该方法不会被调用用于由虚拟机创建/设置的主方法线程或“系统”组线程。
+         * 未来该方法新增的功能可能也必须添加到虚拟机中。
+         * 状态值为零对应状态“NEW”。
          */
         if (threadStatus != 0)
             throw new IllegalThreadStateException();
 
-        /* Notify the group that this thread is about to be started
-         * so that it can be added to the group's list of threads
-         * and the group's unstarted count can be decremented. */
+        /* 通知线程组该线程即将启动，这样可以将其添加到线程组的线程列表中，并减少线程组的未启动线程数。 */
         group.add(this);
 
         boolean started = false;
@@ -720,8 +713,7 @@ class Thread implements Runnable {
                     group.threadStartFailed(this);
                 }
             } catch (Throwable ignore) {
-                /* do nothing. If start0 threw a Throwable then
-                  it will be passed up the call stack */
+                /* do nothing. 如果start0抛出了Throwable，则该程序会被传递到调用栈 */
             }
         }
     }
@@ -919,7 +911,7 @@ class Thread implements Runnable {
         synchronized (blockerLock) {
             Interruptible b = blocker;
             if (b != null) {
-                interrupt0();           // Just to set the interrupt flag
+                interrupt0();           // 只是为了设置中断标志
                 b.interrupt(this);
                 return;
             }
@@ -1625,8 +1617,7 @@ class Thread implements Runnable {
                     new RuntimePermission("enableContextClassLoaderOverride");
 
     /** cache of subclass security audit results */
-    /* Replace with ConcurrentReferenceHashMap when/if it appears in a future
-     * release */
+    /* Replace with ConcurrentReferenceHashMap when/if it appears in a future release */
     private static class Caches {
         /** cache of subclass security audit results */
         static final ConcurrentMap<WeakClassKey,Boolean> subclassAudits =
@@ -1742,39 +1733,33 @@ class Thread implements Runnable {
      */
     public enum State {
         /**
-         * Thread state for a thread which has not yet started.
+         * 尚未启动的线程的线程状态。
          */
         NEW,
 
         /**
-         * Thread state for a runnable thread.  A thread in the runnable
-         * state is executing in the Java virtual machine but it may
-         * be waiting for other resources from the operating system
-         * such as processor.
+         * 可运行线程的线程状态。
+         * 处于可运行状态的线程正在 Java 虚拟机中执行，但它可能正在等待操作系统的其他资源，如处理器（CPU时间片）。
          */
         RUNNABLE,
 
         /**
-         * Thread state for a thread blocked waiting for a monitor lock.
-         * A thread in the blocked state is waiting for a monitor lock
-         * to enter a synchronized block/method or
-         * reenter a synchronized block/method after calling
+         * 线程状态为线程被阻塞等待显示器锁定。
+         * 处于阻塞状态的线程正在等待监视锁进入同步的块/方法，或在调用后重新进入同步的块/方法
          * {@link Object#wait() Object.wait}.
          */
         BLOCKED,
 
         /**
-         * Thread state for a waiting thread.
-         * A thread is in the waiting state due to calling one of the
-         * following methods:
+         * 等待线程的线程状态。
+         * 线程处于等待状态是调用以下方法之一：
          * <ul>
          *   <li>{@link Object#wait() Object.wait} with no timeout</li>
          *   <li>{@link #join() Thread.join} with no timeout</li>
          *   <li>{@link LockSupport#park() LockSupport.park}</li>
          * </ul>
          *
-         * <p>A thread in the waiting state is waiting for another thread to
-         * perform a particular action.
+         * <p>处于等待状态的线程正在等待另一个线程执行特定操作。
          *
          * For example, a thread that has called <tt>Object.wait()</tt>
          * on an object is waiting for another thread to call
@@ -1785,9 +1770,8 @@ class Thread implements Runnable {
         WAITING,
 
         /**
-         * Thread state for a waiting thread with a specified waiting time.
-         * A thread is in the timed waiting state due to calling one of
-         * the following methods with a specified positive waiting time:
+         * 具有指定等待时间的等待线程的线程状态。
+         * 线程因调用以下指定正等待时间的方法之一而处于定时等待状态：
          * <ul>
          *   <li>{@link #sleep Thread.sleep}</li>
          *   <li>{@link Object#wait(long) Object.wait} with timeout</li>
@@ -1799,8 +1783,8 @@ class Thread implements Runnable {
         TIMED_WAITING,
 
         /**
-         * Thread state for a terminated thread.
-         * The thread has completed execution.
+         * 终止线程的线程状态。
+         * 线程已完成执行。
          */
         TERMINATED;
     }

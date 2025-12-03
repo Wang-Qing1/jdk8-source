@@ -52,10 +52,6 @@ package java.util;
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
  * Java Collections Framework</a>.
  *
- * @author  Josh Bloch
- * @author  Neal Gafter
- * @see Collection
- * @since 1.2
  */
 
 public abstract class AbstractCollection<E> implements Collection<E> {
@@ -132,11 +128,11 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * }</pre>
      */
     public Object[] toArray() {
-        // Estimate size of array; be prepared to see more or fewer elements
+        // 估计数组大小;准备好看到更多或更少的元素
         Object[] r = new Object[size()];
         Iterator<E> it = iterator();
         for (int i = 0; i < r.length; i++) {
-            if (! it.hasNext()) // fewer elements than expected
+            if (! it.hasNext()) // 元素比预期少
                 return Arrays.copyOf(r, i);
             r[i] = it.next();
         }

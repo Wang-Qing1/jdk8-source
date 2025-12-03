@@ -95,54 +95,45 @@ import sun.misc.SharedSecrets;
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
  * Java Collections Framework</a>.
  *
- * @author  Josh Bloch
- * @author  Neal Gafter
  * @see     Collection
  * @see     List
  * @see     LinkedList
  * @see     Vector
- * @since   1.2
  */
 
-public class ArrayList<E> extends AbstractList<E>
-        implements List<E>, RandomAccess, Cloneable, java.io.Serializable
-{
+public class ArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess, Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 8683452581122892189L;
 
     /**
-     * Default initial capacity.
+     * 默认初始容量。
      */
     private static final int DEFAULT_CAPACITY = 10;
 
     /**
-     * Shared empty array instance used for empty instances.
+     * 用于空实例的共享空数组实例（ArrayList = null）。
      */
     private static final Object[] EMPTY_ELEMENTDATA = {};
 
     /**
-     * Shared empty array instance used for default sized empty instances. We
-     * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
-     * first element is added.
+     * 用于默认大小的空数组实例的共享空数组实例（new ArrayList()）。
+     * 我们区分这和 EMPTY_ELEMENTDATA 来判断加入第一个元素时容量应该扩展多少。
      */
     private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
 
     /**
-     * The array buffer into which the elements of the ArrayList are stored.
-     * The capacity of the ArrayList is the length of this array buffer. Any
-     * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
-     * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     * ArrayList 元素存储在的数组缓冲区。
+     * ArrayList 的容量是该数组缓冲区的长度。
+     * 任何 elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA 的空 ArrayList 在添加第一个元素时容量都会扩展为 DEFAULT_CAPACITY。
      */
-    transient Object[] elementData; // non-private to simplify nested class access
+    transient Object[] elementData; // 非私有以便简化嵌套类访问
 
     /**
-     * The size of the ArrayList (the number of elements it contains).
-     *
-     * @serial
+     * ArrayList 的大小（包含元素的数量）。
      */
     private int size;
 
     /**
-     * Constructs an empty list with the specified initial capacity.
+     * 构造一个具有指定初始容量的空列表。
      *
      * @param  initialCapacity  the initial capacity of the list
      * @throws IllegalArgumentException if the specified initial capacity
@@ -160,22 +151,20 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Constructs an empty list with an initial capacity of ten.
+     * 构造一个初始容量为十的空列表。
      */
     public ArrayList() {
         this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
     }
 
     /**
-     * Constructs a list containing the elements of the specified
-     * collection, in the order they are returned by the collection's
-     * iterator.
+     * 构建包含指定集合元素的列表，按集合迭代器返回的顺序排列。
      *
      * @param c the collection whose elements are to be placed into this list
      * @throws NullPointerException if the specified collection is null
      */
     public ArrayList(Collection<? extends E> c) {
-        Object[] a = c.toArray();
+        Object[] a = c.toArray(); // toArray() 返回集合的一个副本，修改副本不会影响原集合元素
         if ((size = a.length) != 0) {
             if (c.getClass() == ArrayList.class) {
                 elementData = a;
@@ -189,9 +178,8 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
-     * list's current size.  An application can use this operation to minimize
-     * the storage of an <tt>ArrayList</tt> instance.
+     * 将该 <tt>ArrayList</tt> 实例的容量修剪为列表当前大小。
+     * 应用程序可以通过此作最小化<tt>ArrayList</tt>实例的存储。
      */
     public void trimToSize() {
         modCount++;
@@ -203,9 +191,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Increases the capacity of this <tt>ArrayList</tt> instance, if
-     * necessary, to ensure that it can hold at least the number of elements
-     * specified by the minimum capacity argument.
+     * 如有必要，增加该 <tt>ArrayList</tt> 实例的容量，以确保其至少能容纳最小容量参数中指定的元素数量。
      *
      * @param   minCapacity   the desired minimum capacity
      */
@@ -213,8 +199,7 @@ public class ArrayList<E> extends AbstractList<E>
         int minExpand = (elementData != DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
             // any size if not default element table
             ? 0
-            // larger than default for default empty table. It's already
-            // supposed to be at default size.
+            // larger than default for default empty table. It's already supposed to be at default size.
             : DEFAULT_CAPACITY;
 
         if (minCapacity > minExpand) {
@@ -222,6 +207,7 @@ public class ArrayList<E> extends AbstractList<E>
         }
     }
 
+    // 容量计算
     private static int calculateCapacity(Object[] elementData, int minCapacity) {
         if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
             return Math.max(DEFAULT_CAPACITY, minCapacity);
@@ -229,10 +215,12 @@ public class ArrayList<E> extends AbstractList<E>
         return minCapacity;
     }
 
+    // 保障内部容量
     private void ensureCapacityInternal(int minCapacity) {
         ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));
     }
 
+    // 保障指定容量
     private void ensureExplicitCapacity(int minCapacity) {
         modCount++;
 
@@ -242,22 +230,21 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * The maximum size of array to allocate.
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
+     * 分配的最大数组大小。
+     * 有些虚拟机会在数组中保留部分头字（header words）。
+     * 尝试分配更大数组时，可能导致 OutOfMemoryError: Requested array size exceeds VM limit
      */
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /**
-     * Increases the capacity to ensure that it can hold at least the
-     * number of elements specified by the minimum capacity argument.
+     * 增加容量以确保至少能容纳最小容量参数中指定的元素数量。
      *
      * @param minCapacity the desired minimum capacity
      */
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = elementData.length;
+        // 新容量 = 旧容量 + 旧容量/2  即扩容因子为 1.5
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
@@ -267,6 +254,7 @@ public class ArrayList<E> extends AbstractList<E>
         elementData = Arrays.copyOf(elementData, newCapacity);
     }
 
+    // 超过最大容量
     private static int hugeCapacity(int minCapacity) {
         if (minCapacity < 0) // overflow
             throw new OutOfMemoryError();
@@ -276,7 +264,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * Returns the number of elements in this list.
+     * 返回该列表中的元素数量。
      *
      * @return the number of elements in this list
      */
@@ -417,7 +405,7 @@ public class ArrayList<E> extends AbstractList<E>
         return a;
     }
 
-    // Positional Access Operations
+    // 位置（索引）访问操作
 
     @SuppressWarnings("unchecked")
     E elementData(int index) {
@@ -502,8 +490,8 @@ public class ArrayList<E> extends AbstractList<E>
 
         int numMoved = size - index - 1;
         if (numMoved > 0)
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
+            // 从源elementData的索引（index+1）开始，复制numMoved个元素到目标elementData的索引（index）
+            System.arraycopy(elementData, index+1, elementData, index, numMoved);
         elementData[--size] = null; // clear to let GC do its work
 
         return oldValue;
@@ -540,21 +528,18 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /*
-     * Private remove method that skips bounds checking and does not
-     * return the value removed.
+     * 私有移除方法跳过边界检查，且不返回移除值。
      */
     private void fastRemove(int index) {
         modCount++;
         int numMoved = size - index - 1;
         if (numMoved > 0)
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
+            System.arraycopy(elementData, index+1, elementData, index, numMoved);
         elementData[--size] = null; // clear to let GC do its work
     }
 
     /**
-     * Removes all of the elements from this list.  The list will
-     * be empty after this call returns.
+     * Removes all of the elements from this list.  The list will be empty after this call returns.
      */
     public void clear() {
         modCount++;
@@ -726,12 +711,9 @@ public class ArrayList<E> extends AbstractList<E>
                 if (c.contains(elementData[r]) == complement)
                     elementData[w++] = elementData[r];
         } finally {
-            // Preserve behavioral compatibility with AbstractCollection,
-            // even if c.contains() throws.
+            // Preserve behavioral compatibility with AbstractCollection, even if c.contains() throws.
             if (r != size) {
-                System.arraycopy(elementData, r,
-                                 elementData, w,
-                                 size - r);
+                System.arraycopy(elementData, r, elementData, w, size - r);
                 w += size - r;
             }
             if (w != size) {
@@ -754,8 +736,7 @@ public class ArrayList<E> extends AbstractList<E>
      *             instance is emitted (int), followed by all of its elements
      *             (each an <tt>Object</tt>) in the proper order.
      */
-    private void writeObject(java.io.ObjectOutputStream s)
-        throws java.io.IOException{
+    private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException{
         // Write out element count, and any hidden stuff
         int expectedModCount = modCount;
         s.defaultWriteObject();
@@ -913,7 +894,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * An optimized version of AbstractList.ListItr
+     * AbstractList 的优化版本。ListItr
      */
     private class ListItr extends Itr implements ListIterator<E> {
         ListItr(int index) {
